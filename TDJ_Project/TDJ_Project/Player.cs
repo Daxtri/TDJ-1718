@@ -1,0 +1,67 @@
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace TDJ_Project
+{
+    public class Player
+    {
+        private Texture2D texture;
+        private Rectangle rectangle;
+        private Vector2 position;
+
+        // acessors
+        public Texture2D Texture { get; set; }
+        public Rectangle Rectangle { get; set; }
+        public Vector2 Position { get; set; }
+        public Vector2 Velocity { get; set; }
+
+        public Player ( Texture2D texture,Rectangle rec, Vector2 pos, Vector2 vel)
+        {
+            Texture = texture;
+            Rectangle = rec;
+            Position = pos;
+            Velocity = vel;
+        }
+
+        public void Update (GameTime gametime)
+        {
+            // atualizar com hitboxes e animaçao
+        }
+
+        public void Move(KeyboardState keyboardState)
+        {
+            //inicializar posição
+            Position = Vector2.Zero;
+
+            //alterar posiçao com input
+            // force a timer on space so u can't spam jump
+            if (Keyboard.GetState().IsKeyDown(Keys.Space))
+                Position = new Vector2(Position.X,-7);
+            if (Keyboard.GetState().IsKeyDown(Keys.A))
+                Position = new Vector2(-2,Position.Y);
+            if (Keyboard.GetState().IsKeyDown(Keys.D))
+                Position = new Vector2(2,Position.Y);
+
+            //gravidade -- mudar para colidir com as plataformas
+            if ( Keyboard.GetState().IsKeyUp(Keys.Space))
+                Position = new Vector2(Position.X,3);
+
+            Rectangle = new Rectangle
+                (Rectangle.X + (int)(Position.X * Velocity.X),
+                Rectangle.Y + (int)(Position.Y * Velocity.Y),
+                Rectangle.Width,Rectangle.Height);
+        }
+
+        public void Draw (SpriteBatch spriteBtach)
+        {
+            spriteBtach.Draw(Texture, Rectangle, Color.White);
+        }
+    }
+}

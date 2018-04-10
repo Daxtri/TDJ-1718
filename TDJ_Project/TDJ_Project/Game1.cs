@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
 
 namespace TDJ_Project
 {
@@ -11,11 +12,16 @@ namespace TDJ_Project
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        Player pl;
+        List<DesertLvl> tiles = new List<DesertLvl>(15);
+
 
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+            graphics.PreferredBackBufferWidth = 1440;
+            graphics.PreferredBackBufferHeight = 900;
         }
 
         /// <summary>
@@ -28,6 +34,9 @@ namespace TDJ_Project
         {
             // TODO: Add your initialization logic here
 
+            pl = new Player(new Texture2D(graphics.GraphicsDevice, 50, 50), new Rectangle(100, 100, 50, 50), new Vector2(1,1), new Vector2(1,1));
+            //tiles.Add(new DesertLvl(new Texture2D(graphics.GraphicsDevice,100,100), new Rectangle(100, 100, 100, 100)));
+
             base.Initialize();
         }
 
@@ -39,6 +48,10 @@ namespace TDJ_Project
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            pl.Texture =Content.Load<Texture2D>("ic"); //change later
+
+            //for (int i = 1;i < 14; i++)
+            //tiles[i].Texture = Content.Load<Texture2D>("terrain");// change later
 
             // TODO: use this.Content to load your game content here
         }
@@ -62,7 +75,10 @@ namespace TDJ_Project
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
+            // Estado to teclado
+            KeyboardState keyboardState = Keyboard.GetState();
+
+            pl.Move(keyboardState);
 
             base.Update(gameTime);
         }
@@ -73,8 +89,14 @@ namespace TDJ_Project
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.LightYellow);
 
+            spriteBatch.Begin();
+            pl.Draw(spriteBatch);
+
+            //for (int i = 1; i < 14; i++)
+                //tiles[i].Draw(spriteBatch);
+            spriteBatch.End();
             // TODO: Add your drawing code here
 
             base.Draw(gameTime);
