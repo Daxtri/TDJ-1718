@@ -12,15 +12,14 @@ namespace TDJ_Project
 {
     public class Player
     {
-        private Texture2D texture;
-        private Rectangle rectangle;
-        private Vector2 position;
 
         // acessors
         public Texture2D Texture { get; set; }
         public Rectangle Rectangle { get; set; }
         public Vector2 Position { get; set; }
         public Vector2 Velocity { get; set; }
+        public bool ismoving = false, isattacking = false;
+        
 
         public Player ( Texture2D texture,Rectangle rec, Vector2 pos, Vector2 vel)
         {
@@ -33,6 +32,15 @@ namespace TDJ_Project
         public void Update (GameTime gametime)
         {
             // atualizar com hitboxes e animaçao
+            while (ismoving == true)
+            {
+                //correr loop animaçao
+            }
+
+            if (isattacking == true)
+            {
+                //correr loop animaçao
+            }
         }
 
         public void Move(KeyboardState keyboardState)
@@ -42,16 +50,28 @@ namespace TDJ_Project
 
             //alterar posiçao com input
             // force a timer on space so u can't spam jump
+            // create timer class for jumps/attacks
             if (Keyboard.GetState().IsKeyDown(Keys.Space))
-                Position = new Vector2(Position.X,-7);
+            {
+                Position = new Vector2(Position.X, -7);
+            }
             if (Keyboard.GetState().IsKeyDown(Keys.A))
-                Position = new Vector2(-2,Position.Y);
+            {
+                Position = new Vector2(-2, Position.Y);
+                //ismoving = true;
+            }
             if (Keyboard.GetState().IsKeyDown(Keys.D))
-                Position = new Vector2(2,Position.Y);
+            {
+                Position = new Vector2(2, Position.Y);
+                //ismoving = true;
+            }
 
             //gravidade -- mudar para colidir com as plataformas
-            if ( Keyboard.GetState().IsKeyUp(Keys.Space))
-                Position = new Vector2(Position.X,3);
+            if (Keyboard.GetState().IsKeyUp(Keys.Space))
+            {
+                //if (Position.Y <900)
+                Position = new Vector2(Position.X, 3);
+            }
 
             Rectangle = new Rectangle
                 (Rectangle.X + (int)(Position.X * Velocity.X),

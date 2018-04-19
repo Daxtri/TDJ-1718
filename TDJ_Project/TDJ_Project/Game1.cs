@@ -12,7 +12,9 @@ namespace TDJ_Project
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        Texture2D back;
         Player pl;
+        Camera cm;
         List<DesertLvl> tiles = new List<DesertLvl>(15);
 
 
@@ -49,6 +51,7 @@ namespace TDJ_Project
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             pl.Texture =Content.Load<Texture2D>("ic"); //change later
+            back = Content.Load<Texture2D>("Paper_Mockup4");
 
             //for (int i = 1;i < 14; i++)
             //tiles[i].Texture = Content.Load<Texture2D>("terrain");// change later
@@ -79,6 +82,8 @@ namespace TDJ_Project
             KeyboardState keyboardState = Keyboard.GetState();
 
             pl.Move(keyboardState);
+            pl.Update(gameTime);
+            //cm.Update();
 
             base.Update(gameTime);
         }
@@ -92,6 +97,7 @@ namespace TDJ_Project
             GraphicsDevice.Clear(Color.LightYellow);
 
             spriteBatch.Begin();
+            spriteBatch.Draw(back, Vector2.Zero, Color.LightGoldenrodYellow);
             pl.Draw(spriteBatch);
 
             //for (int i = 1; i < 14; i++)

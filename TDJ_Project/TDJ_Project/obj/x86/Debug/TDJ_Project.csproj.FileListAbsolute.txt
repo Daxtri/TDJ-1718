@@ -48,3 +48,4 @@ D:\Skool\GITHUB\TDJ-1718\TDJ_Project\TDJ_Project\bin\Windows\x86\Debug\SharpDX.D
 D:\Skool\GITHUB\TDJ-1718\TDJ_Project\TDJ_Project\bin\Windows\x86\Debug\SharpDX.XInput.xml
 D:\Skool\GITHUB\TDJ-1718\TDJ_Project\TDJ_Project\bin\Windows\x86\Debug\SharpDX.Direct3D9.xml
 D:\Skool\GITHUB\TDJ-1718\TDJ_Project\TDJ_Project\obj\x86\Debug\TDJ_Project.csprojResolveAssemblyReference.cache
+D:\Skool\GITHUB\TDJ-1718\TDJ_Project\TDJ_Project\bin\Windows\x86\Debug\Content\Paper_Mockup4.xnb
