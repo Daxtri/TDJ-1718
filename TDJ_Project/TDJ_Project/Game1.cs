@@ -1,9 +1,15 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System.Collections.Generic;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Media;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Design;
 
-namespace TDJ_Project
+namespace TDJ_projects
 {
     /// <summary>
     /// This is the main type for your game.
@@ -12,18 +18,17 @@ namespace TDJ_Project
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        Texture2D back;
-        Player pl;
-        Camera cm;
-        List<DesertLvl> tiles = new List<DesertLvl>(15);
+        //Map map = new Map();
+        //Camera camera;
+        
+
+        //Texture2D backgroundTexture;
 
 
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            graphics.PreferredBackBufferWidth = 1440;
-            graphics.PreferredBackBufferHeight = 900;
         }
 
         /// <summary>
@@ -34,10 +39,15 @@ namespace TDJ_Project
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+            ScreenManager.Instance.Initialize();
+            ScreenManager.Instance.Dimensions = new Vector2(1080, 840);
 
-            pl = new Player(new Texture2D(graphics.GraphicsDevice, 50, 50), new Rectangle(100, 100, 50, 50), new Vector2(1,1), new Vector2(1,1));
-            //tiles.Add(new DesertLvl(new Texture2D(graphics.GraphicsDevice,100,100), new Rectangle(100, 100, 100, 100)));
+            // TODO: Add your initialization logic here
+            graphics.PreferredBackBufferWidth = (int)ScreenManager.Instance.Dimensions.X;
+            graphics.PreferredBackBufferHeight = (int)ScreenManager.Instance.Dimensions.Y;
+            graphics.ApplyChanges();
+
+            Tiles.Content = Content;
 
             base.Initialize();
         }
@@ -50,12 +60,30 @@ namespace TDJ_Project
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            pl.Texture =Content.Load<Texture2D>("ic"); //change later
-            back = Content.Load<Texture2D>("Paper_Mockup4");
 
-            //for (int i = 1;i < 14; i++)
-            //tiles[i].Texture = Content.Load<Texture2D>("terrain");// change later
+            //backgroundTexture = Content.Load<Texture2D>("BG");
 
+            ScreenManager.Instance.LoadContent(Content);
+
+            #region Map
+            /*
+            map.Generate(new int[,]{
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,2,2,2,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,14,15,16,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,5,5,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,5,5,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12,9,13,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,2,2,2,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,1,2,2,2,3,0,0,0,0,12,9,9,9,13,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,7,5,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,4,5,5,5,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,5,5,5,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {2,2,2,2,2,2,2,2,7,5,5,5,5,5,11,2,2,2,3,0,0,1,2,2,2,2,2,2,2,2,2,3,0,0,2,0,2,0,1,2,2,2,2,2,7,5,5,5,5,5,11,2,2,2,2,2,2,2,2,2,2,2,2,2},
+                {5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,8,0,0,10,5,5,5,5,5,5,5,5,8,0,0,5,0,5,0,10,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5},
+            }, 65);
+            */
+            #endregion
             // TODO: use this.Content to load your game content here
         }
 
@@ -78,12 +106,11 @@ namespace TDJ_Project
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // Estado to teclado
-            KeyboardState keyboardState = Keyboard.GetState();
 
-            pl.Move(keyboardState);
-            pl.Update(gameTime);
-            //cm.Update();
+
+            // TODO: Add your update logic here
+            ScreenManager.Instance.Update(gameTime);
+           
 
             base.Update(gameTime);
         }
@@ -94,16 +121,18 @@ namespace TDJ_Project
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.LightYellow);
+            GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            spriteBatch.Begin();
-            spriteBatch.Draw(back, Vector2.Zero, Color.LightGoldenrodYellow);
-            pl.Draw(spriteBatch);
-
-            //for (int i = 1; i < 14; i++)
-                //tiles[i].Draw(spriteBatch);
-            spriteBatch.End();
             // TODO: Add your drawing code here
+            spriteBatch.Begin();
+
+            ScreenManager.Instance.Draw(spriteBatch);
+
+            //spriteBatch.Draw(backgroundTexture, Vector2.Zero, Color.White);
+
+            //map.Draw(spriteBatch);
+
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }
