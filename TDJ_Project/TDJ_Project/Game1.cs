@@ -14,15 +14,19 @@ namespace TDJ_Project
         SpriteBatch spriteBatch;
         Texture2D back;
         Player pl;
-        Camera cm;
-        List<DesertLvl> tiles = new List<DesertLvl>(15);
+        Map map = new Map();
+        Camera camera;
+        int previousScroll;
+        float zoomIncrement = 0.1f;
+
+        Texture2D backgroundTexture;
 
 
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            graphics.PreferredBackBufferWidth = 1440;
+            graphics.PreferredBackBufferWidth = 1200;
             graphics.PreferredBackBufferHeight = 900;
         }
 
@@ -37,7 +41,7 @@ namespace TDJ_Project
             // TODO: Add your initialization logic here
 
             pl = new Player(new Texture2D(graphics.GraphicsDevice, 50, 50), new Rectangle(100, 100, 50, 50), new Vector2(1,1), new Vector2(1,1));
-            //tiles.Add(new DesertLvl(new Texture2D(graphics.GraphicsDevice,100,100), new Rectangle(100, 100, 100, 100)));
+            Tiles.Content = Content;
 
             base.Initialize();
         }
@@ -52,9 +56,27 @@ namespace TDJ_Project
             spriteBatch = new SpriteBatch(GraphicsDevice);
             pl.Texture =Content.Load<Texture2D>("ic"); //change later
             back = Content.Load<Texture2D>("Paper_Mockup4");
+            camera = new Camera(GraphicsDevice.Viewport, map.Width, map.Height, 1f);
 
-            //for (int i = 1;i < 14; i++)
-            //tiles[i].Texture = Content.Load<Texture2D>("terrain");// change later
+            #region Map
+
+            map.Generate(new int[,]{
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,22,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,22,22,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,2,2,2,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,14,15,16,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,5,5,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,14,16,0,4,5,5,13,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,14,15,15,16,0,0,0,0,0,12,9,13,0,0,0,0,0,0,0,0,0,0,0,30,0,0,0,0,0,0,0,0,0,4,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,26,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,21,0,4,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,19,0,0,1,2,2,2,3,0,0,0,0,0,0,0,0,0,17,0,0,28,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,7,8,6,0,0,0,0,0,0,19,0,0,0,0,0,0,0},
+                {0,0,0,0,0,23,23,0,22,4,5,5,5,6,21,0,0,0,0,0,0,0,0,0,0,0,24,24,0,0,0,0,0,0,0,0,0,0,0,0,27,0,0,0,0,4,5,5,5,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {2,2,2,2,2,2,2,2,7,8,5,5,5,10,11,2,2,2,3,0,0,1,2,2,2,2,2,2,2,2,2,3,0,0,2,0,2,0,1,2,2,2,2,2,7,8,5,5,5,10,11,2,2,2,2,2,2,2,2,2,2,2,2,2},
+                {5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,6,0,0,4,5,5,5,5,5,5,5,5,5,6,0,0,5,0,5,0,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5},
+            }, 65);
+
+            #endregion
 
             // TODO: use this.Content to load your game content here
         }
@@ -83,7 +105,33 @@ namespace TDJ_Project
 
             pl.Move(keyboardState);
             pl.Update(gameTime);
-            //cm.Update();
+
+            MouseState mouseStateCurrent = Mouse.GetState();
+
+
+            if (mouseStateCurrent.ScrollWheelValue > previousScroll)
+                camera.Zoom += zoomIncrement;
+            else if (mouseStateCurrent.ScrollWheelValue < previousScroll)
+                camera.Zoom -= zoomIncrement;
+
+            previousScroll = mouseStateCurrent.ScrollWheelValue;
+
+            // Move the camera when the arrow keys are pressed
+            Vector2 movement = Vector2.Zero;
+            Viewport vp = graphics.GraphicsDevice.Viewport;
+
+            if (keyboardState.IsKeyDown(Keys.Left))
+                movement.X--;
+            if (keyboardState.IsKeyDown(Keys.Right))
+                movement.X++;
+            if (keyboardState.IsKeyDown(Keys.Up))
+                movement.Y--;
+            if (keyboardState.IsKeyDown(Keys.Down))
+                movement.Y++;
+
+
+
+            camera.Pos += movement * 20;
 
             base.Update(gameTime);
         }
@@ -100,8 +148,15 @@ namespace TDJ_Project
             spriteBatch.Draw(back, Vector2.Zero, Color.LightGoldenrodYellow);
             pl.Draw(spriteBatch);
 
-            //for (int i = 1; i < 14; i++)
-                //tiles[i].Draw(spriteBatch);
+            spriteBatch.Begin(SpriteSortMode.BackToFront,
+                     null, null, null, null, null,
+                     camera.GetTransformation());
+
+            spriteBatch.Draw(backgroundTexture,
+               new Rectangle(0, 0, map.Width, map.Height),
+               null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 1);
+
+            map.Draw(spriteBatch);
             spriteBatch.End();
             // TODO: Add your drawing code here
 

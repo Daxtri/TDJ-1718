@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 
-namespace TDJ_projects
+namespace TDJ_Project
 {
     public class Camera
     {
