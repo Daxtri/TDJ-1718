@@ -20,14 +20,14 @@ namespace TDJ_Project
         float zoomIncrement = 0.1f;
 
         Texture2D backgroundTexture;
-
+        CollisionTiles tiles;
 
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             graphics.PreferredBackBufferWidth = 1200;
-            graphics.PreferredBackBufferHeight = 900;
+            graphics.PreferredBackBufferHeight = 800;
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace TDJ_Project
         {
             // TODO: Add your initialization logic here
 
-            pl = new Player(new Texture2D(graphics.GraphicsDevice, 50, 50), new Rectangle(100, 100, 50, 50), new Vector2(1,1), new Vector2(1,1));
+            pl = new Player(new Texture2D(graphics.GraphicsDevice, 70, 70), new Rectangle(100, 500, 70, 70), new Vector2(1,1), new Vector2(1,1));
             Tiles.Content = Content;
 
             base.Initialize();
@@ -102,8 +102,8 @@ namespace TDJ_Project
 
             // Estado to teclado
             KeyboardState keyboardState = Keyboard.GetState();
-
-            pl.Move(keyboardState);
+            
+            pl.Move(keyboardState, tiles);
             pl.Update(gameTime);
 
             MouseState mouseStateCurrent = Mouse.GetState();
@@ -146,17 +146,18 @@ namespace TDJ_Project
 
             spriteBatch.Begin();
             spriteBatch.Draw(back, Vector2.Zero, Color.LightGoldenrodYellow);
-            pl.Draw(spriteBatch);
+           
 
-            spriteBatch.Begin(SpriteSortMode.BackToFront,
+            /*spriteBatch.Begin(SpriteSortMode.BackToFront,
                      null, null, null, null, null,
                      camera.GetTransformation());
 
             spriteBatch.Draw(backgroundTexture,
                new Rectangle(0, 0, map.Width, map.Height),
-               null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 1);
+               null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 1);*/
 
             map.Draw(spriteBatch);
+            pl.Draw(spriteBatch);
             spriteBatch.End();
             // TODO: Add your drawing code here
 

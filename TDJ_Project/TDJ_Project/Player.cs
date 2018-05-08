@@ -16,8 +16,8 @@ namespace TDJ_Project
         // acessors
         public Texture2D Texture { get; set; }
         public Rectangle Rectangle { get; set; }
-        public Vector2 Position { get; set; }
-        public Vector2 Velocity { get; set; }
+        private Vector2 Position;
+        private Vector2 Velocity ;
         public bool ismoving = false, isattacking = false;
         
 
@@ -32,6 +32,8 @@ namespace TDJ_Project
         public void Update (GameTime gametime)
         {
             // atualizar com hitboxes e animaçao
+            
+
             while (ismoving == true)
             {
                 //correr loop animaçao
@@ -43,7 +45,7 @@ namespace TDJ_Project
             }
         }
 
-        public void Move(KeyboardState keyboardState)
+        public void Move(KeyboardState keyboardState, CollisionTiles tiles)
         {
             //inicializar posição
             Position = Vector2.Zero;
@@ -53,16 +55,17 @@ namespace TDJ_Project
             // create timer class for jumps/attacks
             if (Keyboard.GetState().IsKeyDown(Keys.Space))
             {
-                Position = new Vector2(Position.X, -7);
+                Position.Y = -7;
             }
             if (Keyboard.GetState().IsKeyDown(Keys.A))
             {
-                Position = new Vector2(-2, Position.Y);
+                Position.X = -2;
+                //Velocity.X = -2;
                 //ismoving = true;
             }
             if (Keyboard.GetState().IsKeyDown(Keys.D))
             {
-                Position = new Vector2(2, Position.Y);
+                Position.X = 2;
                 //ismoving = true;
             }
 
@@ -70,7 +73,14 @@ namespace TDJ_Project
             if (Keyboard.GetState().IsKeyUp(Keys.Space))
             {
                 //if (Position.Y <900)
-                Position = new Vector2(Position.X, 3);
+                Position.Y = 3;
+            }
+
+            if ((Rectangle.Bottom >= tiles.Rectangle.Top))
+            {
+                Position.Y = tiles.Rectangle.Y - tiles.Rectangle.Height - 1;
+                Velocity.Y = 0;
+
             }
 
             Rectangle = new Rectangle
