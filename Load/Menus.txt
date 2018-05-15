@@ -1,0 +1,12 @@
+﻿Load=[MENU]
+
+Load=[Axis][Font][Animation][Align]
+[2][MenuFont][Fade][Center]
+
+Load=[Item][LinkType][LinkID]
+[New Game][Screen][DesertScreen]
+[Load Game][Screen][SplashScreen]
+[Options][Screen][SplashScreen]
+[Quit][Screen][SplashScreen]
+
+EndLoad=[MENU]
