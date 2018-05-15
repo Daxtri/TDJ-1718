@@ -18,12 +18,11 @@ namespace TDJ_projects
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        Map map = new Map();
-        Camera camera;
-        int previousScroll;
-        float zoomIncrement = 0.1f;
+        //Map map = new Map();
+        //Camera camera;
+        
 
-        Texture2D backgroundTexture;
+        //Texture2D backgroundTexture;
 
 
         public Game1()
@@ -40,12 +39,14 @@ namespace TDJ_projects
         /// </summary>
         protected override void Initialize()
         {
+            ScreenManager.Instance.Initialize();
+            ScreenManager.Instance.Dimensions = new Vector2(1080, 840);
+
             // TODO: Add your initialization logic here
-            graphics.PreferredBackBufferWidth = 1080;
-            graphics.PreferredBackBufferHeight = 840;
+            graphics.PreferredBackBufferWidth = (int)ScreenManager.Instance.Dimensions.X;
+            graphics.PreferredBackBufferHeight = (int)ScreenManager.Instance.Dimensions.Y;
             graphics.ApplyChanges();
 
-            Tiles.Content = Content;
 
             base.Initialize();
         }
@@ -59,28 +60,28 @@ namespace TDJ_projects
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            backgroundTexture = Content.Load<Texture2D>("BG");
-            camera = new Camera(GraphicsDevice.Viewport, map.Width, map.Height, 1f);
+            //backgroundTexture = this.content.Load<Texture2D>("BG");
 
+            ScreenManager.Instance.LoadContent(Content);
 
             #region Map
-
+            /*
             map.Generate(new int[,]{
                 {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
                 {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,22,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,22,22,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
                 {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,2,2,2,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,14,15,16,0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,5,5,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,14,16,0,4,5,5,13,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,14,15,15,16,0,0,0,0,0,12,9,13,0,0,0,0,0,0,0,0,0,0,0,30,0,0,0,0,0,0,0,0,0,4,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0,26,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,21,0,4,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,19,0,0,1,2,2,2,3,0,0,0,0,0,0,0,0,0,17,0,0,28,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,7,8,6,0,0,0,0,0,0,19,0,0,0,0,0,0,0},
-                {0,0,0,0,0,23,23,0,22,4,5,5,5,6,21,0,0,0,0,0,0,0,0,0,0,0,24,24,0,0,0,0,0,0,0,0,0,0,0,0,27,0,0,0,0,4,5,5,5,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                {2,2,2,2,2,2,2,2,7,8,5,5,5,10,11,2,2,2,3,0,0,1,2,2,2,2,2,2,2,2,2,3,0,0,2,0,2,0,1,2,2,2,2,2,7,8,5,5,5,10,11,2,2,2,2,2,2,2,2,2,2,2,2,2},
-                {5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,6,0,0,4,5,5,5,5,5,5,5,5,5,6,0,0,5,0,5,0,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,5,5,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,5,5,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12,9,13,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,2,2,2,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,1,2,2,2,3,0,0,0,0,12,9,9,9,13,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,7,5,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,4,5,5,5,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,5,5,5,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {2,2,2,2,2,2,2,2,7,5,5,5,5,5,11,2,2,2,3,0,0,1,2,2,2,2,2,2,2,2,2,3,0,0,2,0,2,0,1,2,2,2,2,2,7,5,5,5,5,5,11,2,2,2,2,2,2,2,2,2,2,2,2,2},
+                {5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,8,0,0,10,5,5,5,5,5,5,5,5,8,0,0,5,0,5,0,10,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5},
             }, 65);
-            
+            */
             #endregion
             // TODO: use this.Content to load your game content here
         }
@@ -103,37 +104,12 @@ namespace TDJ_projects
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-            KeyboardState keyboardState = Keyboard.GetState();
-            MouseState mouseStateCurrent = Mouse.GetState();
-            
 
-            if (mouseStateCurrent.ScrollWheelValue > previousScroll)
-                camera.Zoom += zoomIncrement;
-            else if (mouseStateCurrent.ScrollWheelValue < previousScroll)
-                camera.Zoom -= zoomIncrement;
 
-            previousScroll = mouseStateCurrent.ScrollWheelValue;
-
-            // Move the camera when the arrow keys are pressed
-            Vector2 movement = Vector2.Zero;
-            Viewport vp = graphics.GraphicsDevice.Viewport;
-
-            if (keyboardState.IsKeyDown(Keys.Left))
-                movement.X--;
-            if (keyboardState.IsKeyDown(Keys.Right))
-                movement.X++;
-            if (keyboardState.IsKeyDown(Keys.Up))
-                movement.Y--;
-            if (keyboardState.IsKeyDown(Keys.Down))
-                movement.Y++;
-
-           
-
-            camera.Pos += movement * 20;
 
             // TODO: Add your update logic here
-
-            System.Diagnostics.Debug.WriteLine(camera.Pos);
+            ScreenManager.Instance.Update(gameTime);
+           
 
             base.Update(gameTime);
         }
@@ -147,15 +123,13 @@ namespace TDJ_projects
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
-            spriteBatch.Begin(SpriteSortMode.BackToFront,
-                    null, null, null, null, null,
-                    camera.GetTransformation());
+            spriteBatch.Begin();
 
-            spriteBatch.Draw(backgroundTexture,
-               new Rectangle(0, 0, map.Width, map.Height),
-               null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 1);
+            ScreenManager.Instance.Draw(spriteBatch);
 
-            map.Draw(spriteBatch);
+            //spriteBatch.Draw(backgroundTexture, Vector2.Zero, Color.White);
+
+            //map.Draw(spriteBatch);
 
             spriteBatch.End();
 
