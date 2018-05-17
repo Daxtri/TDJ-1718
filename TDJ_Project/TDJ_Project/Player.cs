@@ -18,8 +18,9 @@ namespace TDJ_Project
         public Rectangle Rectangle { get; set; }
         private Vector2 Position;
         private Vector2 Velocity ;
-        public bool ismoving = false, isattacking = false;
-        
+        public int HP = 100;
+        public bool ismoving = false, isattacking = false, backwards = false, die = false;
+        Animation animation;
 
         public Player ( Texture2D texture,Rectangle rec, Vector2 pos, Vector2 vel)
         {
@@ -32,20 +33,24 @@ namespace TDJ_Project
         public void Update (GameTime gametime)
         {
             // atualizar com hitboxes e animaçao
-            
+            //gravidade -- mudar para colidir com as plataformas
 
-            while (ismoving == true)
-            {
-                //correr loop animaçao
-            }
+            animation = new Animation();
+            animation.FX(this.Position, gametime);
+            animation.Anim(this.Position, gametime);
+            if (HP <= 0) die = true;
+        }
 
-            if (isattacking == true)
+        public void Coll(Rectangle newtiles)
+        {
+            if (this.Rectangle.CollisionCheck(newtiles)==true)
             {
-                //correr loop animaçao
+                Position.Y = newtiles.Y - newtiles.Height - 1;
+                Velocity.Y = 0;
             }
         }
 
-        public void Move(KeyboardState keyboardState, CollisionTiles tiles)
+        public void Move(KeyboardState keyboardState)
         {
             //inicializar posição
             Position = Vector2.Zero;
@@ -55,43 +60,49 @@ namespace TDJ_Project
             // create timer class for jumps/attacks
             if (Keyboard.GetState().IsKeyDown(Keys.Space))
             {
-                Position.Y = -7;
+                Position.Y = -3;
+                Velocity.Y = 3f;
+                ismoving = false;
             }
             if (Keyboard.GetState().IsKeyDown(Keys.A))
             {
-                Position.X = -2;
-                //Velocity.X = -2;
-                //ismoving = true;
+                Position.X = -3;
+                Velocity.X = 1f;
+                ismoving = true;
+                backwards = true;
             }
             if (Keyboard.GetState().IsKeyDown(Keys.D))
             {
-                Position.X = 2;
-                //ismoving = true;
+                Position.X = 3 ;
+                Velocity.X = 1f;
+                ismoving = true;
+                backwards = false;
             }
 
-            //gravidade -- mudar para colidir com as plataformas
             if (Keyboard.GetState().IsKeyUp(Keys.Space))
             {
-                //if (Position.Y <900)
-                Position.Y = 3;
+                
+                Position.Y = 3f;
+                Velocity.Y = 1f;
+                ismoving = false;
             }
 
-            if ((Rectangle.Bottom >= tiles.Rectangle.Top))
+            if (Keyboard.GetState().IsKeyDown(Keys.F))
             {
-                Position.Y = tiles.Rectangle.Y - tiles.Rectangle.Height - 1;
-                Velocity.Y = 0;
-
+                isattacking = true;
             }
+            else isattacking = false;
 
             Rectangle = new Rectangle
-                (Rectangle.X + (int)(Position.X * Velocity.X),
-                Rectangle.Y + (int)(Position.Y * Velocity.Y),
-                Rectangle.Width,Rectangle.Height);
+               (Rectangle.X + (int)(Position.X * Velocity.X),
+               Rectangle.Y + (int)(Position.Y * Velocity.Y),
+               Rectangle.Width, Rectangle.Height);
+
         }
 
         public void Draw (SpriteBatch spriteBtach)
         {
-            spriteBtach.Draw(Texture, Rectangle, Color.White);
+            spriteBtach.Draw(Texture, animation.source, Color.White);
         }
     }
 }

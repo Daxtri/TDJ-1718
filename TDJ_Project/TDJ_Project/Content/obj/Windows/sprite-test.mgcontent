@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <SourceFile>D:/Skool/GITHUB/TDJ-1718/TDJ_Project/TDJ_Project/Content/sprite-test.png</SourceFile>
-  <SourceTime>2018-05-07T22:02:37.244222+01:00</SourceTime>
+  <SourceTime>2018-05-15T11:21:48.6430098+01:00</SourceTime>
   <DestFile>D:/Skool/GITHUB/TDJ-1718/TDJ_Project/TDJ_Project/Content/bin/Windows/sprite-test.xnb</DestFile>
-  <DestTime>2018-05-08T11:46:24.7192247+01:00</DestTime>
+  <DestTime>2018-05-15T11:25:27.4500916+01:00</DestTime>
   <Importer>TextureImporter</Importer>
   <ImporterTime>2017-03-01T15:05:36+00:00</ImporterTime>
   <Processor>TextureProcessor</Processor>

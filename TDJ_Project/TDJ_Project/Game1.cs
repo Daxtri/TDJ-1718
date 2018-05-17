@@ -20,7 +20,6 @@ namespace TDJ_Project
         float zoomIncrement = 0.1f;
 
         Texture2D backgroundTexture;
-        CollisionTiles tiles;
 
         public Game1()
         {
@@ -54,7 +53,7 @@ namespace TDJ_Project
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            pl.Texture =Content.Load<Texture2D>("ic"); //change later
+            pl.Texture =Content.Load<Texture2D>("sprite-test"); //change later
             back = Content.Load<Texture2D>("Paper_Mockup4");
             camera = new Camera(GraphicsDevice.Viewport, map.Width, map.Height, 1f);
 
@@ -103,8 +102,14 @@ namespace TDJ_Project
             // Estado to teclado
             KeyboardState keyboardState = Keyboard.GetState();
             
-            pl.Move(keyboardState, tiles);
+            foreach (CollisionTiles tile in map.CollisionTiles)
+            {
+                pl.Coll(tile.Rectangle);
+            }
+
+            pl.Move(keyboardState);
             pl.Update(gameTime);
+            
 
             MouseState mouseStateCurrent = Mouse.GetState();
 
