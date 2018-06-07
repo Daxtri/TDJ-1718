@@ -18,9 +18,11 @@ namespace TDJ_Project
         public Rectangle Rectangle { get; set; }
         private Vector2 Position;
         private Vector2 Velocity ;
-        public int HP = 100;
+        public int HP = 200;
         public bool ismoving = false, isattacking = false, backwards = false, die = false;
         Animation animation;
+        const float TIMER = 1f;
+        float timer = 1f;
 
         public Player ( Texture2D texture,Rectangle rec, Vector2 pos, Vector2 vel)
         {
@@ -43,14 +45,37 @@ namespace TDJ_Project
 
         public void Coll(Rectangle newtiles)
         {
+            if (this.Rectangle.SidesCheck(newtiles) == true)
+            {
+                this.Rectangle.SidesColl(newtiles);
+                Velocity.Y = 0;
+            }
+        }
+
+       /* public void Coll(Rectangle newtiles)
+        {
             if (this.Rectangle.CollisionCheck(newtiles)==true)
             {
                 Position.Y = newtiles.Y - newtiles.Height - 1;
                 Velocity.Y = 0;
             }
-        }
+        }*/
 
-        public void Move(KeyboardState keyboardState)
+
+       /* public float Pause(GameTime gameTime)
+        {
+            float elapsed = (float)gameTime.ElapsedGameTime.Milliseconds;
+            timer -= elapsed;
+            if(timer <= 0)
+            {
+                timer = TIMER;
+            }
+
+           return timer;
+        }*/
+
+
+        public void Move(KeyboardState keyboardState, GameTime gameTime)
         {
             //inicializar posição
             Position = Vector2.Zero;
@@ -58,11 +83,14 @@ namespace TDJ_Project
             //alterar posiçao com input
             // force a timer on space so u can't spam jump
             // create timer class for jumps/attacks
-            if (Keyboard.GetState().IsKeyDown(Keys.Space))
+            if (Keyboard.GetState().IsKeyDown(Keys.Space) && timer == TIMER )
             {
+               // Pause(gameTime);
                 Position.Y = -3;
                 Velocity.Y = 3f;
                 ismoving = false;
+
+                
             }
             if (Keyboard.GetState().IsKeyDown(Keys.A))
             {
@@ -87,8 +115,9 @@ namespace TDJ_Project
                 ismoving = false;
             }
 
-            if (Keyboard.GetState().IsKeyDown(Keys.F))
+            if (Keyboard.GetState().IsKeyDown(Keys.F) && timer == TIMER)
             {
+               // Pause(gameTime);
                 isattacking = true;
             }
             else isattacking = false;
@@ -100,9 +129,9 @@ namespace TDJ_Project
 
         }
 
-        public void Draw (SpriteBatch spriteBtach)
+        public void Draw (SpriteBatch spriteBatch)
         {
-            spriteBtach.Draw(Texture, animation.source, Color.White);
+            spriteBatch.Draw(Texture,animation.source,  Color.White);
         }
     }
 }

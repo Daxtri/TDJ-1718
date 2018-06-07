@@ -14,6 +14,7 @@ namespace TDJ_Project
         SpriteBatch spriteBatch;
         Texture2D back;
         Player pl;
+        HUD hud;
         Map map = new Map();
         Camera camera;
         int previousScroll;
@@ -41,7 +42,7 @@ namespace TDJ_Project
 
             pl = new Player(new Texture2D(graphics.GraphicsDevice, 70, 70), new Rectangle(100, 500, 70, 70), new Vector2(1,1), new Vector2(1,1));
             Tiles.Content = Content;
-
+         
             base.Initialize();
         }
 
@@ -56,6 +57,8 @@ namespace TDJ_Project
             pl.Texture =Content.Load<Texture2D>("sprite-test"); //change later
             back = Content.Load<Texture2D>("Paper_Mockup4");
             camera = new Camera(GraphicsDevice.Viewport, map.Width, map.Height, 1f);
+            hud.HBar = Content.Load<Texture2D>("HP base");
+            hud.HBarpos = Content.Load<Texture2D>("HP pos");
 
             #region Map
 
@@ -107,9 +110,13 @@ namespace TDJ_Project
                 pl.Coll(tile.Rectangle);
             }
 
-            pl.Move(keyboardState);
+            pl.Move(keyboardState, gameTime);
             pl.Update(gameTime);
             
+            if(pl.die == true)
+            {
+                // menu restart ou voltar ao menu principal
+            }
 
             MouseState mouseStateCurrent = Mouse.GetState();
 
@@ -138,6 +145,8 @@ namespace TDJ_Project
 
             camera.Pos += movement * 20;
 
+            //hud.Update(gameTime);
+
             base.Update(gameTime);
         }
 
@@ -149,20 +158,19 @@ namespace TDJ_Project
         {
             GraphicsDevice.Clear(Color.LightYellow);
 
-            spriteBatch.Begin();
-            spriteBatch.Draw(back, Vector2.Zero, Color.LightGoldenrodYellow);
-           
-
-            /*spriteBatch.Begin(SpriteSortMode.BackToFront,
+            spriteBatch.Begin(SpriteSortMode.BackToFront,
                      null, null, null, null, null,
                      camera.GetTransformation());
 
+            spriteBatch.Draw(back, Vector2.Zero, Color.LightGoldenrodYellow);
+
             spriteBatch.Draw(backgroundTexture,
                new Rectangle(0, 0, map.Width, map.Height),
-               null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 1);*/
+               null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 1);
 
             map.Draw(spriteBatch);
             pl.Draw(spriteBatch);
+            hud.Draw(spriteBatch);
             spriteBatch.End();
             // TODO: Add your drawing code here
 
